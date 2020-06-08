@@ -1,3 +1,11 @@
+var record_animation = false;
+var name = "image_"
+var total_frames = 400;
+var frame = 0;
+var loop = 0;
+var total_time = 4*Math.PI;
+var rate = total_time/total_frames;
+
 
 var N = 50;
 var M = 100; 
@@ -12,7 +20,7 @@ var h_min = 2;
 var h_max = 0.25;
 
 var time = 0;
-var rate = 2*Math.PI/300;
+//var rate = 2*Math.PI/300;
 
 var get_mouse_pos = false;
 var get_touch_pos = false;
@@ -25,13 +33,13 @@ const ctx = canvas.getContext('2d');
 
 
 
-startAnimating(24);
+startAnimating(30);
 
 
 function draw() {
   
-  var W = canvas.width = window.innerWidth;
-  var H = canvas.height = window.innerHeight;;
+  var W = canvas.width = 500; //window.innerWidth;
+  var H = canvas.height = 500; //window.innerHeight;;
 
   ctx.fillStyle = 'rgba(21,32,43, 1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -49,11 +57,13 @@ function draw() {
   } 
   
   
-  time += rate;
+  //time += rate;
 
-  h = h_min + h_max*Math.sin(time/2);
+  h = h_min + h_max*Math.sin(time);
+
+  //f = 4 + .5*Math.sin(time);
   
-  //window.requestAnimationFrame(draw);
+  
   
   
   canvas.addEventListener('mousedown', e => {
@@ -107,7 +117,34 @@ function animate(newtime) {
 
     if (elapsed > fpsInterval) {
         then = now - (elapsed % fpsInterval);
-        draw();  
+        draw();
+        
+        frame = (frame+1)%total_frames;
+        time = rate*frame;
+        
+
+        if(record_animation) {
+
+            if (loop === 1) { 
+            let frame_number = frame.toString().padStart(total_frames.toString().length, '0');
+            let filename = name+frame_number+'.png'
+                
+            dataURL = canvas.toDataURL();
+            var element = document.createElement('a');
+            element.setAttribute('href', dataURL);
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            }
+
+            if (frame + 1 === total_frames) {
+                loop += 1;
+            }
+
+            if (loop === 2) { stop_animation = true }
+        }
     }
 }
 
